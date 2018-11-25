@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
-              android:layout_height="match_parent"
+              android:layout_height="wrap_content"
               android:orientation="vertical">
 
     <android.support.design.widget.TextInputLayout
@@ -10,22 +10,12 @@
         android:layout_height="wrap_content">
 
         <EditText
-            android:id="@+id/taskTitleInput1"
+            android:id="@+id/long_click_title_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Task Title"/>
     </android.support.design.widget.TextInputLayout>
 
-
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Task Total Hour"
-            android:id="@+id/taskTotalInput1"/>
-    </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
@@ -35,7 +25,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Task Remaining"
-            android:id="@+id/taskRemainingInput1"/>
+            android:id="@+id/long_click_remaining_hour_text"/>
     </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Task Total Hour"
+            android:inputType="number"
+            android:id="@+id/long_click_total_hour_text"/>
+    </android.support.design.widget.TextInputLayout>
+
 
 </LinearLayout>

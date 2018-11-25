@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.NumberPicker;
@@ -51,30 +52,86 @@ public class MainActivity extends AppCompatActivity {
         getArrayListFromPreference();
 
 
-        ListView taskList = (ListView)findViewById(R.id.taskList);
+        final ListView taskList = (ListView)findViewById(R.id.taskList);
+        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+
+
+
+
+
         taskAdapter = new TaskAdapter(this,tasks);
         taskList.setAdapter(taskAdapter);
+        taskList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                View customAlertView = LayoutInflater.from(MainActivity.this).inflate(R.layout.list_item_long_click_dialog,null);
+                builder.setView(customAlertView);
+
+                final EditText longClickEditTitle = customAlertView.findViewById(R.id.long_click_title_text);
+                final EditText longClickEditTotalHour = customAlertView.findViewById(R.id.long_click_total_hour_text);
+                final EditText longClickEditRemainingHour = customAlertView.findViewById(R.id.long_click_remaining_hour_text);
+
+                final TaskModel currentModel = tasks.get(position);
+
+                longClickEditRemainingHour.setText(String.valueOf(currentModel.getTaskRemainingTime()));
+                longClickEditTotalHour.setText(String.valueOf(currentModel.getTaskTotalTime()));
+                longClickEditTitle.setText(String.valueOf(currentModel.getTaskTitle()));
+
+                builder.setTitle("Edit: "+currentModel.getTaskTitle());
 
 
 
-        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String newTitle = longClickEditTitle.getText().toString();
+                        String newRemHo = longClickEditRemainingHour.getText().toString();
+                        String newTotal = longClickEditTotalHour.getText().toString();
+
+//                        System.out.println(newTitle+" "+newRemHo+" "+newTotal);
+//                        System.out.println(newRemHo.matches("[0-9]+"));
+
+                        if(!(newRemHo.matches("[0-9]+")) || !(newTotal.matches("[0-9]+"))){
+                            Snackbar.make(fab,"Invalid Numbers!!", Snackbar.LENGTH_LONG).show();
+                            return;
+                        }
+
+                        currentModel.setTaskTitle(newTitle);
+                        currentModel.setTaskRemainingTime(Integer.parseInt(newRemHo));
+                        currentModel.setTaskTotalTime(Integer.parseInt(newTotal));
+
+                        MainActivity.this.taskAdapter.notifyDataSetChanged();
+                        MainActivity.this.updatePreferenceList();
+                        Snackbar.make(fab,"Saved Edit!", Snackbar.LENGTH_LONG).show();
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+                builder.show();
+
+                return true;
+            }
+        });
+
+
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 View customAlertView = LayoutInflater.from(MainActivity.this).inflate(R.layout.input_dialog,null);
                 builder.setView(customAlertView);
-
                 builder.setTitle("Create New Task");
-
-
-
                 final NumberPicker np = customAlertView.findViewById(R.id.numberPicker);
                 np.setMinValue(NUMBER_PICKER_MIN_VAL);
                 np.setMaxValue(NUMBER_PICKER_MAX_VAL);
-
                 final EditText et = customAlertView.findViewById(R.id.taskTitleInput);
-
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {

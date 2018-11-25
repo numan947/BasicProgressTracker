@@ -15,6 +15,18 @@ public class TaskModel {
         this.taskRemainingTime = taskRemainingTime;
     }
 
+    public void setTaskTitle(String taskTitle) {
+        this.taskTitle = taskTitle;
+    }
+
+    public void setTaskTotalTime(int taskTotalTime) {
+        this.taskTotalTime = taskTotalTime;
+    }
+
+    public void setTaskRemainingTime(int taskRemainingTime) {
+        this.taskRemainingTime = taskRemainingTime;
+    }
+
     public String getTaskTitle() {
         return taskTitle;
     }
@@ -26,4 +38,6 @@ public class TaskModel {
     public int getTaskRemainingTime() {
         return taskRemainingTime;
     }
+
+
 }
