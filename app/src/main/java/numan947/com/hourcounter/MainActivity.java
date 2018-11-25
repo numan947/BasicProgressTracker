@@ -168,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
                         String taskTitle = et.getText().toString();
                         if(taskTitle.equals("")){
                             Snackbar.make(fab, "Empty Task Title!", Snackbar.LENGTH_LONG).show();
+                            return;
                         }
 
                         TaskModel newTask = new TaskModel(taskTitle,np.getValue(),np.getValue());
@@ -251,7 +252,12 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+
+    private void exportArchive(){
+        //TODO: ADD FILE EXPORTING CAPABILITY
+        //Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
     }
 
     @Override
