@@ -35,7 +35,6 @@
         android:id="@+id/numberPicker"
         android:layout_width="172dp"
         android:layout_height="103dp"
-        android:descendantFocusability="blocksDescendants"
         tools:layout_editor_absoluteX="160dp"
         tools:layout_editor_absoluteY="142dp"/>
 

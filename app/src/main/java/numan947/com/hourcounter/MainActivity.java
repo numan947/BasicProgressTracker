@@ -1,12 +1,16 @@
 package numan947.com.hourcounter;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -21,6 +25,9 @@ import android.widget.NumberPicker;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
@@ -28,12 +35,15 @@ public class MainActivity extends AppCompatActivity {
 
 
     private final String TASK_SAVE_STRING = "numan947.com.hourcounter.KEY_FOR_SAVED_TASK_LIST_IN_SHARED_PREFS";
+    private final String TASK_ARCHIVE_FILE = "TASK_ARCHIVE_FILE";
+
     private final int NUMBER_PICKER_MIN_VAL = 2;
     private final int NUMBER_PICKER_MAX_VAL = 200;
 
 
     private ArrayList<TaskModel>tasks;
     private TaskAdapter taskAdapter;
+    private TaskModel delModel;
 
 
 
@@ -112,13 +122,33 @@ public class MainActivity extends AppCompatActivity {
                         dialog.cancel();
                     }
                 });
+                builder.setNeutralButton("Archive", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                        builder.setTitle("Are You Sure?");
+                        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                MainActivity.this.archiveTask(currentModel);
+                            }
+                        });
+                        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                        builder.show();
+                    }
+                });
 
                 builder.show();
 
                 return true;
             }
         });
-
 
 
         fab.setOnClickListener(new View.OnClickListener() {
@@ -136,6 +166,10 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String taskTitle = et.getText().toString();
+                        if(taskTitle.equals("")){
+                            Snackbar.make(fab, "Empty Task Title!", Snackbar.LENGTH_LONG).show();
+                        }
+
                         TaskModel newTask = new TaskModel(taskTitle,np.getValue(),np.getValue());
                         MainActivity.this.tasks.add(newTask);
                         MainActivity.this.taskAdapter.notifyDataSetChanged();
@@ -170,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
         this.tasks = gson.fromJson(jsonTasks,type);
     }
 
-    private void updatePreferenceList() {
+    public void updatePreferenceList() {
         SharedPreferences appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         SharedPreferences.Editor prefsEditor = appSharedPrefs.edit();
 
@@ -181,6 +215,44 @@ public class MainActivity extends AppCompatActivity {
         prefsEditor.apply();
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        if(requestCode==1010)
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                this.archiveTask(delModel);
+
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    private void archiveTask(TaskModel taskModel)
+    {
+        if(taskModel==null)
+            return;
+        this.delModel = taskModel;
+        if(!(ActivityCompat.checkSelfPermission(this,Manifest.permission.WRITE_EXTERNAL_STORAGE)==PackageManager.PERMISSION_GRANTED)){
+            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1010);
+            return;
+        }
+
+        File path = getFilesDir();
+        File archiveFile = new File(path,this.TASK_ARCHIVE_FILE);
+        FileOutputStream fout = null;
+
+        try {
+            archiveFile.createNewFile();
+            fout = new FileOutputStream(archiveFile,true);
+            fout.write(taskModel.toString().getBytes());
+            fout.flush();
+            fout.close();
+            this.tasks.remove(taskModel);
+            this.taskAdapter.notifyDataSetChanged();
+            this.updatePreferenceList();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

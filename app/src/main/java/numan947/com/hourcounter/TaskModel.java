@@ -40,4 +40,8 @@ public class TaskModel {
     }
 
 
+    @Override
+    public String toString() {
+        return "Title: "+getTaskTitle()+"\nRemainingTime: "+getTaskRemainingTime()+"\n+TotalTime: "+getTaskTotalTime()+"\n";
+    }
 }
