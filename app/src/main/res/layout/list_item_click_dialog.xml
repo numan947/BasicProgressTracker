@@ -10,7 +10,7 @@
         android:layout_height="wrap_content">
 
         <EditText
-            android:id="@+id/taskTitleInput"
+            android:id="@+id/taskTitleInput1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Task Title"/>
@@ -24,7 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Task Total Hour"
-            android:id="@+id/taskTotalInput"/>
+            android:id="@+id/taskTotalInput1"/>
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
@@ -35,7 +35,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Task Remaining"
-            android:id="@+id/taskRemainingInput"/>
+            android:id="@+id/taskRemainingInput1"/>
     </android.support.design.widget.TextInputLayout>
 
 </LinearLayout>
